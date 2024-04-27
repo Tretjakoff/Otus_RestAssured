@@ -15,8 +15,8 @@ import java.util.List;
 public class FindPetByIDTest {
 
   /*
-  В тесте проверяю что при GET-запросе 'https://petstore.swagger.io/v2/pet/{petId}' (поиск питомца по id)
-  с корректным id статус код - 200
+  В тесте проверяю что при GET-запросе с корректным id возвращается статус-код - 200
+  'https://petstore.swagger.io/v2/pet/{petId}' (поиск питомца по id)
    */
   @Test
   public void checkCorrectStatusCodeFindPetByID() {
@@ -48,8 +48,9 @@ public class FindPetByIDTest {
   }
 
   /*
-  В тесте проверяю что при GET-запросе 'https://petstore.swagger.io/v2/pet/{petId}' (поиск питомца по id)
-  с id отсутствующего питомца статус код - 404 и в теле ответа приходит верное сообщение об ошибке
+   В тесте проверяю что при GET-запросе с id отсутствующего питомца
+   возвращается статус-код - 404 и в теле ответа приходит верное сообщение об ошибке
+  'https://petstore.swagger.io/v2/pet/{petId}' (поиск питомца по id)
    */
   @Test
   public void checkIncorrectStatusCodeFindPetByID() {
