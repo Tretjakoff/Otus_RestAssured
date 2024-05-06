@@ -1,10 +1,8 @@
 package pet.findpet;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import com.github.javafaker.Faker;
 import dto.Category;
 import dto.PetDTO;
-import dto.PetResponseDTO;
 import dto.Tag;
 import org.junit.jupiter.api.Test;
 import services.PetServiceApi;
@@ -12,7 +10,9 @@ import services.PetServiceApi;
 import java.util.Arrays;
 import java.util.List;
 
-public class FindPetByIDTest {
+public class PositiveFindPetByIDTest {
+
+  private final Faker faker = new Faker();
 
   /*
   В тесте проверяю что при GET-запросе с корректным id возвращается статус-код - 200
@@ -31,7 +31,7 @@ public class FindPetByIDTest {
             .name("dog")
             .build())
         .id(idPet)
-        .name("Bobik")
+        .name(faker.dog().name())
         .photoUrls(Arrays.asList("http://photo1", "http://photo2"))
         .tags(List.of(Tag.builder()
             .id(3)
@@ -45,26 +45,8 @@ public class FindPetByIDTest {
 
     petServiceApi.findPetByID(idPet)
         .statusCode(200);
-  }
 
-  /*
-   В тесте проверяю что при GET-запросе с id отсутствующего питомца
-   возвращается статус-код - 404 и в теле ответа приходит верное сообщение об ошибке
-  'https://petstore.swagger.io/v2/pet/{petId}' (поиск питомца по id)
-   */
-  @Test
-  public void checkIncorrectStatusCodeFindPetByID() {
-
-    Long idPet = 15555555555555L;
-
-    PetServiceApi petServiceApi = new PetServiceApi();
-
-    PetResponseDTO response = petServiceApi.findPetByID(idPet)
-        .statusCode(404)
-        .extract().body().as(PetResponseDTO.class);
-
-    assertEquals(1L, response.getCode(), "code is incorrect");
-    assertEquals("error", response.getType(), "type is incorrect");
-    assertEquals("Pet not found", response.getMessage(), "message is incorrect");
+    petServiceApi.deletePetByID(idPet)
+        .statusCode(200);
   }
 }

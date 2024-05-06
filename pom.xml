@@ -17,6 +17,9 @@
         <spotbugs-maven-plugin.version>4.8.2.0</spotbugs-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.1.0</maven-checkstyle-plugin.version>
         <surefire.plugin.version>2.22.2</surefire.plugin.version>
+        <faker.version>1.0.2</faker.version>
+        <aspectj.version>1.9.6</aspectj.version>
+        <baseUrl>https://petstore.swagger.io/v2</baseUrl>
     </properties>
 
     <dependencies>
@@ -25,20 +28,17 @@
             <artifactId>jackson-mapper-asl</artifactId>
             <version>${jackson-mapper-asl.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>${junit-jupiter.version}</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <version>${junit-jupiter.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -55,7 +55,11 @@
             <artifactId>json-schema-validator</artifactId>
             <version>${rest-assured.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.github.javafaker</groupId>
+            <artifactId>javafaker</artifactId>
+            <version>${faker.version}</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -96,6 +100,16 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${surefire.plugin.version}</version>
+                <configuration>
+                    <argLine>
+                        -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
+                    </argLine>
+                    <systemPropertyVariables>
+                        <baseUri>${baseUrl}</baseUri>
+                        <name>junit.jupiter.extensions.autodetection.enabled</name>
+                        <value>true</value>
+                    </systemPropertyVariables>
+                </configuration>
             </plugin>
         </plugins>
     </build>

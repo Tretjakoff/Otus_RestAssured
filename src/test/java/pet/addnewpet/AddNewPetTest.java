@@ -1,8 +1,8 @@
 package pet.addnewpet;
 
-import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
+import com.github.javafaker.Faker;
 import dto.Category;
 import dto.PetDTO;
 import dto.Tag;
@@ -15,8 +15,10 @@ import java.util.List;
 
 public class AddNewPetTest {
 
+  private final Faker faker = new Faker();
+
   /*
-  В тесте проверяю статус-код и валидацию по json-схеме ответа POST-запроса
+  В тесте проверяю статус-код и id ответа POST-запроса с id = null в теле запроса
   'https://petstore.swagger.io/v2/pet' - добавление нового питомца в магазин
    */
   @Test
@@ -29,8 +31,8 @@ public class AddNewPetTest {
             .id(2)
             .name("dog")
             .build())
-        .id(1)
-        .name("Sharik")
+        .id(null)
+        .name(faker.dog().name())
         .photoUrls(Arrays.asList("http://photo1", "http://photo2"))
         .tags(Arrays.asList(Tag.builder()
                 .id(1)
@@ -43,9 +45,16 @@ public class AddNewPetTest {
         .status("available")
         .build();
 
-    petServiceApi.addNewPetToTheStore(petDTO)
+    Long idPet = petServiceApi.addNewPetToTheStore(petDTO)
         .statusCode(200)
-        .body(matchesJsonSchemaInClasspath("schema/NewPet.json"));
+        .extract().jsonPath()
+        .getLong("id");
+
+    assertNotNull(idPet, "id is null");
+    assertTrue(idPet > 0, "id is not positive");
+
+    petServiceApi.deletePetByID(idPet)
+        .statusCode(200);
   }
 
   /*
@@ -58,7 +67,7 @@ public class AddNewPetTest {
     Integer idPet = 1;
     Integer idCategory = 2;
     String nameCategory = "dog";
-    String namePet = "Sharik";
+    String namePet = faker.dog().name();
     List<String> photoUrls = Arrays.asList("http://photo1", "http://photo2");
     Integer idTag = 2;
     String nameTag = "friend";
@@ -85,6 +94,9 @@ public class AddNewPetTest {
     JsonPath response = petServiceApi.addNewPetToTheStore(petDTO)
         .statusCode(200)
         .extract().jsonPath();
+
+    petServiceApi.deletePetByID(idPet)
+        .statusCode(200);
 
     assertEquals(idPet, response.getInt("id"), "id pet is incorrect");
     assertEquals(idCategory, response.getInt("category.id"), "id category pet is incorrect");
