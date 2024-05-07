@@ -2,11 +2,14 @@ package pet.findpet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.github.javafaker.Faker;
 import dto.PetResponseDTO;
 import org.junit.jupiter.api.Test;
 import services.PetServiceApi;
 
 public class NegativeFindPetByIDTest {
+
+  private final Faker faker = new Faker();
 
   /*
    В тесте проверяю что при GET-запросе с id отсутствующего питомца
@@ -16,7 +19,7 @@ public class NegativeFindPetByIDTest {
   @Test
   public void checkIncorrectStatusCodeFindPetByID() {
 
-    Long idPet = 15555555555555L;
+    Long idPet = faker.number().numberBetween(1000000000000L, 10000000000000L);
 
     PetServiceApi petServiceApi = new PetServiceApi();
 

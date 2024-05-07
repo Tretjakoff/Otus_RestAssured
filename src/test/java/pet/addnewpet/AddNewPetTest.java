@@ -7,6 +7,7 @@ import dto.Category;
 import dto.PetDTO;
 import dto.Tag;
 import io.restassured.path.json.JsonPath;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import services.PetServiceApi;
 
@@ -16,6 +17,14 @@ import java.util.List;
 public class AddNewPetTest {
 
   private final Faker faker = new Faker();
+  private Long idPet;
+
+  @AfterEach
+  public void deletePet() {
+    PetServiceApi petServiceApi = new PetServiceApi();
+    petServiceApi.deletePetByID(idPet)
+        .statusCode(200);
+  }
 
   /*
   В тесте проверяю статус-код и id ответа POST-запроса с id = null в теле запроса
@@ -45,16 +54,13 @@ public class AddNewPetTest {
         .status("available")
         .build();
 
-    Long idPet = petServiceApi.addNewPetToTheStore(petDTO)
+    idPet = petServiceApi.addNewPetToTheStore(petDTO)
         .statusCode(200)
         .extract().jsonPath()
         .getLong("id");
 
     assertNotNull(idPet, "id is null");
     assertTrue(idPet > 0, "id is not positive");
-
-    petServiceApi.deletePetByID(idPet)
-        .statusCode(200);
   }
 
   /*
@@ -64,7 +70,7 @@ public class AddNewPetTest {
   @Test
   public void checkJsonFieldsAddNewPet() {
 
-    Integer idPet = 1;
+    idPet = 1L;
     Integer idCategory = 2;
     String nameCategory = "dog";
     String namePet = faker.dog().name();
@@ -94,9 +100,6 @@ public class AddNewPetTest {
     JsonPath response = petServiceApi.addNewPetToTheStore(petDTO)
         .statusCode(200)
         .extract().jsonPath();
-
-    petServiceApi.deletePetByID(idPet)
-        .statusCode(200);
 
     assertEquals(idPet, response.getInt("id"), "id pet is incorrect");
     assertEquals(idCategory, response.getInt("category.id"), "id category pet is incorrect");
